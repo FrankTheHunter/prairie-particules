@@ -100,12 +100,9 @@ function draw() {
 
 setInterval(draw,1);
    
-
   
     x1 += dx1;
     y1 += dy1;
 
-
-}
 
 setInterval(draw,1);
