@@ -1,0 +1,47 @@
+import "./style.css";
+
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
+const ctx = canvas.getContext("2d")!;
+const width = (canvas.width = window.innerWidth);
+const height = (canvas.height = window.innerHeight);
+
+let x1 = 50, y1 = 50;
+
+let dx1 = 2, dy1 = 3;
+
+function draw() {
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.beginPath();
+  ctx.fillStyle = "#ff0000";
+  ctx.arc(x1, y1, 60, 0, 2 * Math.PI);
+  ctx.fill();
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    dx1 = (mouseX - x1) * 0.01;
+    dy1 = (mouseY - y1) * 0.01;
+
+});
+  
+    if (x1 + dx1 > width || x1 + dx1 < 0) {
+        dx1 *= -1;
+    }
+    if (y1 + dy1 > height || y1 + dy1 < 0) {
+        dy1 *= -1;
+    }
+
+   
+
+  
+    x1 += dx1;
+    y1 += dy1;
+
+
+}
+
+setInterval(draw,1);
