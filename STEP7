@@ -1,0 +1,80 @@
+import "./style.css";
+
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
+
+const ctx = canvas.getContext("2d")!;
+
+const width = (canvas.width = window.innerWidth);
+const height = (canvas.height = window.innerHeight);
+
+const maxPointsPerCluster = 10;
+const minPointsPerCluster = 5;
+const maxSpeed = 10;
+const maxPointSize = 20;
+const minPointSize = 2;
+
+canvas.addEventListener("click", handleCanvasClick);
+
+function generateRandomPoint(x: number, y: number) {
+    const numPoints = Math.floor(Math.random() * (maxPointsPerCluster - minPointsPerCluster + 1)) + minPointsPerCluster;
+    for (let i = 0; i < numPoints; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * maxSpeed;
+        const size = Math.random() * (maxPointSize - minPointSize) + minPointSize;
+        const color = getRandomColor();
+
+        const point = {
+            x: x,
+            y: y,
+            dx: Math.cos(angle) * speed,
+            dy: Math.sin(angle) * speed,
+            size: size,
+            color: color,
+        };
+
+        points.push(point);
+    }
+}
+
+function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function drawPoint(point: { x: number; y: number; size: number; color: string }) {
+    ctx.fillStyle = point.color;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, point.size, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+function animatePoints() {
+    ctx.clearRect(0, 0, width, height);
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        point.x += point.dx;
+        point.y += point.dy;
+        drawPoint(point);
+
+        if (point.x < 0 || point.x > width || point.y < 0 || point.y > height) {
+            points.splice(i, 1);
+            i--;
+        }
+    }
+
+    requestAnimationFrame(animatePoints);
+}
+
+const points: { x: number; y: number; dx: number; dy: number; size: number; color: string }[] = [];
+
+function handleCanvasClick(event: MouseEvent) {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    generateRandomPoint(mouseX, mouseY);
+}
+
+animatePoints();
