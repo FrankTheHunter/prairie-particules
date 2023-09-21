@@ -54,6 +54,8 @@ function drawPoint(point: { x: number; y: number; size: number; color: string })
 
 function animatePoints() {
     ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, width, height);
     for (let i = 0; i < points.length; i++) {
         const point = points[i];
         point.x += point.dx;
