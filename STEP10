@@ -1,0 +1,168 @@
+import "./style.css";
+
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
+const ctx = canvas.getContext("2d")!;
+const width = (canvas.width = window.innerWidth);
+const height = (canvas.height = window.innerHeight);
+
+const maxPointsPerCluster = 10;
+const minPointsPerCluster = 5;
+const maxSpeed = 10;
+const maxPointSize = 20;
+const minPointSize = 2;
+
+const trailLength = 10;
+const trailAlphaDecay = 0.03;
+
+const gravity = 0.2;
+const friction = 0.98;
+const bounceFactor = 0.7;
+
+const collisionFlashColor = "#FF0000";
+const collisionFlashDuration = 100; // Durée du flash de collision en millisecondes
+
+canvas.addEventListener("click", handleCanvasClick);
+
+function generateRandomPoint(x: number, y: number) {
+    const numPoints = Math.floor(Math.random() * (maxPointsPerCluster - minPointsPerCluster + 1)) + minPointsPerCluster;
+    for (let i = 0; i < numPoints; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * maxSpeed;
+        const size = Math.random() * (maxPointSize - minPointSize) + minPointSize;
+        const color = getRandomColor();
+
+        const point = {
+            x: x,
+            y: y,
+            dx: Math.cos(angle) * speed,
+            dy: Math.sin(angle) * speed,
+            size: size,
+            color: color,
+            alpha: 1.0,
+            trail: [],
+        };
+
+        points.push(point);
+    }
+}
+
+function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function drawPoint(point: { x: number; y: number; size: number; color: string; alpha: number; trail: number[][] }) {
+    for (let i = 0; i < point.trail.length; i++) {
+        const trailPosition = point.trail[i];
+        const trailAlpha = point.alpha - i * trailAlphaDecay;
+        if (trailAlpha <= 0) {
+            break;
+        }
+
+        ctx.fillStyle = `rgba(${point.color}, ${trailAlpha})`;
+        ctx.beginPath();
+        ctx.arc(trailPosition[0], trailPosition[1], point.size, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = `rgba(${point.color}, ${point.alpha})`;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, point.size, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+function checkCollision(point1: { x: number; y: number; size: number }, point2: { x: number; y: number; size: number }) {
+    const dx = point1.x - point2.x;
+    const dy = point1.y - point2.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < point1.size + point2.size;
+}
+
+function resolveCollision(point1: { x: number; y: number; dx: number; dy: number; size: number }, point2: { x: number; y: number; dx: number; dy: number; size: number }) {
+    const angle = Math.atan2(point1.y - point2.y, point1.x - point2.x);
+    const speed1 = Math.sqrt(point1.dx * point1.dx + point1.dy * point1.dy);
+    const speed2 = Math.sqrt(point2.dx * point2.dx + point2.dy * point2.dy);
+    const direction1 = Math.atan2(point1.dy, point1.dx);
+    const direction2 = Math.atan2(point2.dy, point2.dx);
+
+    const newSpeed1 = (speed1 * (point1.size - point2.size) + 2 * point2.size * speed2) / (point1.size + point2.size);
+    const newSpeed2 = (speed2 * (point2.size - point1.size) + 2 * point1.size * speed1) / (point1.size + point2.size);
+
+    point1.dx = Math.cos(angle + direction1) * newSpeed1;
+    point1.dy = Math.sin(angle + direction1) * newSpeed1;
+    point2.dx = Math.cos(angle + direction2) * newSpeed2;
+    point2.dy = Math.sin(angle + direction2) * newSpeed2;
+}
+
+function animatePoints() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        point.trail.push([point.x, point.y]);
+
+        if (point.trail.length > trailLength) {
+            point.trail.shift();
+        }
+
+        point.dy += gravity;
+        point.dx *= friction;
+        point.dy *= friction;
+
+        point.x += point.dx;
+        point.y += point.dy;
+
+        point.alpha -= 0.005;
+
+        if (point.y + point.size > height) {
+            point.y = height - point.size;
+            point.dy *= -bounceFactor;
+        }
+
+        for (let j = i + 1; j < points.length; j++) {
+            if (checkCollision(point, points[j])) {
+                resolveCollision(point, points[j]);
+                point.color = collisionFlashColor;
+
+                setTimeout(() => {
+                    point.color = getRandomColor();
+                }, collisionFlashDuration);
+            }
+        }
+
+        drawPoint(point);
+
+        if (point.alpha <= 0) {
+            points.splice(i, 1);
+            i--;
+        }
+    }
+
+    requestAnimationFrame(animatePoints);
+}
+
+const points: {
+    x: number;
+    y: number;
+    dx: number;
+    dy: number;
+    size: number;
+    color: string;
+    alpha: number;
+    trail: number[][];
+}[] = [];
+
+function handleCanvasClick(event: MouseEvent) {
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    generateRandomPoint(mouseX, mouseY);
+}
+
+animatePoints();
