@@ -1,14 +1,16 @@
-import "./style.css";
+import "./style.css"; // Importe une feuille de style CSS
 
-const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
-const ctx = canvas.getContext("2d")!;
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML avec l'ID "particules-canvas"
+const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
 
+const width = (canvas.width = window.innerWidth); // Définit la largeur du canvas sur la largeur de la fenêtre
+const height = (canvas.height = window.innerHeight); // Définit la hauteur du canvas sur la hauteur de la fenêtre
+
+// Définit les coordonnées et les vitesses initiales de quatre cercles rouges
 let x1 = 50, y1 = 50;
-let x2 = width-50, y2 = 50;
-let x3 = 50, y3 = height-50;
-let x4 = width-50, y4 = height-50;
+let x2 = width - 50, y2 = 50;
+let x3 = 50, y3 = height - 50;
+let x4 = width - 50, y4 = height - 50;
 
 let dx1 = 2, dy1 = 3;
 let dx2 = -2, dy2 = 3;
@@ -16,11 +18,13 @@ let dx3 = 2, dy3 = -3;
 let dx4 = -2, dy4 = -3;
 
 function draw() {
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = "#000000"; // Définit la couleur de remplissage pour le fond en noir
+  ctx.fillRect(0, 0, width, height); // Remplit le canvas avec un rectangle noir couvrant toute la surface
 
-  ctx.beginPath();
-  ctx.fillStyle = "#ff0000";
+  ctx.beginPath(); // Commence un nouveau chemin de dessin
+  ctx.fillStyle = "#ff0000"; // Définit la couleur de remplissage pour les cercles en rouge
+
+  // Dessine quatre cercles rouges aux coordonnées (x1, y1), (x2, y2), (x3, y3), (x4, y4) avec un rayon de 60 pixels
   ctx.arc(x1, y1, 60, 0, 2 * Math.PI);
   ctx.fill();
 
@@ -36,48 +40,48 @@ function draw() {
   ctx.arc(x4, y4, 60, 0, 2 * Math.PI);
   ctx.fill();
 
-  
-    if (x1 + dx1 > width || x1 + dx1 < 0) {
-        dx1 *= -1;
-    }
-    if (y1 + dy1 > height || y1 + dy1 < 0) {
-        dy1 *= -1;
-    }
+  // Vérifie si les cercles atteignent les bords du canvas et les fait rebondir en inversant leurs vitesses
+  if (x1 + dx1 > width || x1 + dx1 < 0) {
+    dx1 *= -1;
+  }
+  if (y1 + dy1 > height || y1 + dy1 < 0) {
+    dy1 *= -1;
+  }
 
-    if (x2 + dx2 > width || x2 + dx2 < 0) {
-        dx2 *= -1;
-    }
-    if (y2 + dy2 > height || y2 + dy2 < 0) {
-        dy2 *= -1;
-    }
+  if (x2 + dx2 > width || x2 + dx2 < 0) {
+    dx2 *= -1;
+  }
+  if (y2 + dy2 > height || y2 + dy2 < 0) {
+    dy2 *= -1;
+  }
 
-    if (x3 + dx3 > width || x3 + dx3 < 0) {
-        dx3 *= -1;
-    }
-    if (y3 + dy3 > height || y3 + dy3 < 0) {
-        dy3 *= -1;
-    }
+  if (x3 + dx3 > width || x3 + dx3 < 0) {
+    dx3 *= -1;
+  }
+  if (y3 + dy3 > height || y3 + dy3 < 0) {
+    dy3 *= -1;
+  }
 
-    if (x4 + dx4 > width || x4 + dx4 < 0) {
-        dx4 *= -1;
-    }
-    if (y4 + dy4 > height || y4 + dy4 < 0) {
-        dy4 *= -1;
-    }
+  if (x4 + dx4 > width || x4 + dx4 < 0) {
+    dx4 *= -1;
+  }
+  if (y4 + dy4 > height || y4 + dy4 < 0) {
+    dy4 *= -1;
+  }
 
-  
-    x1 += dx1;
-    y1 += dy1;
+  // Met à jour les coordonnées des cercles en ajoutant leurs vitesses
+  x1 += dx1;
+  y1 += dy1;
 
-    x2 += dx2;
-    y2 += dy2;
+  x2 += dx2;
+  y2 += dy2;
 
-    x3 += dx3;
-    y3 += dy3;
+  x3 += dx3;
+  y3 += dy3;
 
-    x4 += dx4;
-    y4 += dy4;
-
+  x4 += dx4;
+  y4 += dy4;
 }
 
-setInterval(draw,1);
+setInterval(draw, 1); // Appelle la fonction "draw" toutes les 1 milliseconde pour créer l'animation
+
