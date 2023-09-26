@@ -1,21 +1,21 @@
-import "./style.css";
+import "./style.css"; // Importe une feuille de style CSS
 
-const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML avec l'ID "particules-canvas"
+const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
 
-const ctx = canvas.getContext("2d")!;
+const width = (canvas.width = window.innerWidth); // Définit la largeur du canvas sur la largeur de la fenêtre
+const height = (canvas.height = window.innerHeight); // Définit la hauteur du canvas sur la hauteur de la fenêtre
+const radius = 50; // Définit la taille du rayon pour les cercles
 
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
-const radius = 50;
+ctx.fillStyle = "#000000"; // Définit la couleur de remplissage pour les formes en noir
+ctx.fillRect(0, 0, width, height); // Remplit le canvas avec un rectangle noir couvrant toute la surface
 
-ctx.fillStyle = "#000000";
-ctx.fillRect(0, 0, width, height);
+ctx.fillStyle = "#ff0000"; // Définit la couleur de remplissage pour les prochaines formes en rouge
 
-ctx.fillStyle = "#ff0000";
-for (let x of [radius, width - radius]) {
-  for (let y of [radius, height - radius]) {
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fill();
+for (let x of [radius, width - radius]) { // Parcours les coordonnées X des coins gauche et droit
+  for (let y of [radius, height - radius]) { // Parcours les coordonnées Y des coins supérieur et inférieur
+    ctx.beginPath(); // Commence un nouveau chemin de dessin
+    ctx.arc(x, y, radius, 0, 2 * Math.PI); // Dessine un cercle rouge aux coordonnées (x, y) avec un rayon de 50 pixels
+    ctx.fill(); // Remplit le cercle avec la couleur définie précédemment (rouge)
   }
 }
