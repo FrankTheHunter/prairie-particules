@@ -1,25 +1,27 @@
-import "./style.css";
+import "./style.css"; // Importation d'une feuille de style CSS pour le canvas
 
-const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
-const ctx = canvas.getContext("2d")!;
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML
+const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
+const width = (canvas.width = window.innerWidth); // Définit la largeur du canvas sur la largeur de la fenêtre
+const height = (canvas.height = window.innerHeight); // Définit la hauteur du canvas sur la hauteur de la fenêtre
 
-const maxPointsPerCluster = 10;
-const minPointsPerCluster = 5;
-const maxSpeed = 20;
-const maxPointSize = 20;
-const minPointSize = 2;
+// Paramètres de configuration des particules
+const maxPointsPerCluster = 10; // Nombre maximal de particules par groupe
+const minPointsPerCluster = 5; // Nombre minimal de particules par groupe
+const maxSpeed = 20; // Vitesse maximale des particules
+const maxPointSize = 20; // Taille maximale des particules
+const minPointSize = 2; // Taille minimale des particules
 
-const trailLength = 10;
-const trailAlphaDecay = 0.03;
+const trailLength = 10; // Longueur de la traînée laissée par les particules
+const trailAlphaDecay = 0.03; // Taux de décomposition de l'alpha de la traînée
 
-const gravity = 0.2; // Force de gravité
-const friction = 0.98; // Coefficient de frottement
+const gravity = 0.2; // Force de gravité appliquée aux particules
+const friction = 0.98; // Coefficient de frottement pour ralentir les particules
 const bounceFactor = 2; // Facteur de rebond en cas de collision avec le sol
 
-canvas.addEventListener("click", handleCanvasClick);
+canvas.addEventListener("click", handleCanvasClick); // Ajoute un écouteur d'événements pour gérer les clics sur le canvas
 
+// Fonction pour générer un groupe aléatoire de particules à partir d'un point de clic
 function generateRandomPoint(x: number, y: number) {
     const numPoints = Math.floor(Math.random() * (maxPointsPerCluster - minPointsPerCluster + 1)) + minPointsPerCluster;
     for (let i = 0; i < numPoints; i++) {
@@ -37,12 +39,14 @@ function generateRandomPoint(x: number, y: number) {
             color,
             alpha: 1.0,
             trail: [],
+            life: 240, // Durée de vie en frames (à 60 FPS) : 4 secondes
         };
 
-        points.push(point);
+        points.push(point); // Ajoute la particule au tableau de particules
     }
 }
 
+// Fonction pour générer une couleur aléatoire au format hexadécimal
 function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -52,7 +56,8 @@ function getRandomColor() {
     return color;
 }
 
-function drawPoint(point: { x: number; y: number; size: number; color: string; alpha: number; trail: number[][] }) {
+// Fonction pour dessiner une particule avec une traînée
+function drawPoint(point: { x: number; y: number; size: number; color: string; alpha: number; trail: number[][]; life: number }) {
     const { x, y, size, color, alpha, trail } = point;
 
     for (let i = 0; i < trail.length; i++) {
@@ -70,8 +75,12 @@ function drawPoint(point: { x: number; y: number; size: number; color: string; a
         ctx.shadowColor = color;
         ctx.fill();
     }
+
+    // Réduit progressivement l'alpha en fonction de la durée de vie restante
+    point.alpha = point.life / 240; // 4 secondes en frames (à 60 FPS)
 }
 
+// Tableau pour stocker les particules
 const points: {
     x: number;
     y: number;
@@ -81,14 +90,17 @@ const points: {
     color: string;
     alpha: number;
     trail: number[][];
+    life: number;
 }[] = [];
 
+// Fonction pour gérer les clics sur le canvas et générer des particules à partir du point de clic
 function handleCanvasClick(event: MouseEvent) {
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
     generateRandomPoint(mouseX, mouseY);
 }
 
+// Fonction pour détecter les collisions entre les particules
 function detectCollisions() {
     for (let i = 0; i < points.length; i++) {
         const pointA = points[i];
@@ -132,6 +144,7 @@ function detectCollisions() {
     }
 }
 
+// Fonction pour animer les particules
 function animatePoints() {
     // Remplir le fond d'écran en noir
     ctx.fillStyle = "#000000";
@@ -169,10 +182,12 @@ function animatePoints() {
         if (point.alpha <= 0) {
             points.splice(i, 1);
             i--;
+        } else {
+            point.life--;
         }
     }
 
-    requestAnimationFrame(animatePoints);
+    requestAnimationFrame(animatePoints); // Animer les particules en utilisant la fonction requestAnimationFrame
 }
 
-animatePoints();
+animatePoints(); // Lancer l'animation des particules
