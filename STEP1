@@ -1,4 +1,4 @@
-import "./style.css"; // Importe une feuille de style CSS (probablement pour des styles supplémentaires)
+import "./style.css"; // Importe une feuille de style CSS
 
 const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML avec l'ID "particules-canvas"
 const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
