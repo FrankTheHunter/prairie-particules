@@ -1,41 +1,45 @@
-import "./style.css";
+import "./style.css"; // Importe une feuille de style CSS
 
-const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
-const ctx = canvas.getContext("2d")!;
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML avec l'ID "particules-canvas"
+const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
 
-const maxPointsPerCluster = 10;
-const minPointsPerCluster = 5;
-const maxSpeed = 10;
-const maxPointSize = 20;
-const minPointSize = 2;
+const width = (canvas.width = window.innerWidth); // Définit la largeur du canvas sur la largeur de la fenêtre
+const height = (canvas.height = window.innerHeight); // Définit la hauteur du canvas sur la hauteur de la fenêtre
+
+// Définit les paramètres pour la génération des particules
+const maxPointsPerCluster = 10; // Nombre maximum de particules par cluster
+const minPointsPerCluster = 5; // Nombre minimum de particules par cluster
+const maxSpeed = 10; // Vitesse maximale des particules
+const maxPointSize = 20; // Taille maximale des particules
+const minPointSize = 2; // Taille minimale des particules
 
 const trailLength = 10; // Longueur de la traînée
 const trailAlphaDecay = 0.03; // Taux de décroissance de l'opacité de la traînée par itération
 
-canvas.addEventListener("click", handleCanvasClick);
+canvas.addEventListener("click", handleCanvasClick); // Ajoute un écouteur d'événements pour détecter les clics sur le canvas
+
+const points: { x: number; y: number; dx: number; dy: number; size: number; color: string; alpha: number; trail: number[][] }[] = []; // Tableau pour stocker les particules
 
 function generateRandomPoint(x: number, y: number) {
-    const numPoints = Math.floor(Math.random() * (maxPointsPerCluster - minPointsPerCluster + 1)) + minPointsPerCluster;
+    const numPoints = Math.floor(Math.random() * (maxPointsPerCluster - minPointsPerCluster + 1)) + minPointsPerCluster; // Génère un nombre aléatoire de particules pour ce cluster
     for (let i = 0; i < numPoints; i++) {
-        const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * maxSpeed;
-        const size = Math.random() * (maxPointSize - minPointSize) + minPointSize;
-        const color = getRandomColor();
+        const angle = Math.random() * 2 * Math.PI; // Angle aléatoire en radians
+        const speed = Math.random() * maxSpeed; // Vitesse aléatoire
+        const size = Math.random() * (maxPointSize - minPointSize) + minPointSize; // Taille aléatoire
+        const color = getRandomColor(); // Couleur aléatoire
 
         const point = {
             x: x,
             y: y,
-            dx: Math.cos(angle) * speed,
-            dy: Math.sin(angle) * speed,
+            dx: Math.cos(angle) * speed, // Composante en x de la vitesse
+            dy: Math.sin(angle) * speed, // Composante en y de la vitesse
             size: size,
             color: color,
             alpha: 1.0, // Opacité initiale à 100%
             trail: [], // Tableau pour stocker les anciennes positions
         };
 
-        points.push(point);
+        points.push(point); // Ajoute la particule au tableau
     }
 }
 
@@ -43,7 +47,7 @@ function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+        color += letters[Math.floor(Math.random() * 16)]; // Génère une couleur hexadécimale aléatoire
     }
     return color;
 }
@@ -79,9 +83,9 @@ function drawPoint(point: { x: number; y: number; size: number; color: string; a
 }
 
 function animatePoints() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, width, height);
+    ctx.clearRect(0, 0, width, height); // Efface le canvas en le remplissant de blanc
+    ctx.fillStyle = "#000000"; // Définit la couleur de remplissage en noir
+    ctx.fillRect(0, 0, width, height); // Remplit le canvas en noir
 
     for (let i = 0; i < points.length; i++) {
         const point = points[i];
@@ -107,15 +111,13 @@ function animatePoints() {
         drawPoint(point);
     }
 
-    requestAnimationFrame(animatePoints);
+    requestAnimationFrame(animatePoints); // Appelle récursivement la fonction d'animation pour créer une animation continue
 }
-
-const points: { x: number; y: number; dx: number; dy: number; size: number; color: string; alpha: number; trail: number[][] }[] = [];
 
 function handleCanvasClick(event: MouseEvent) {
-    const mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    generateRandomPoint(mouseX, mouseY);
+    const mouseX = event.clientX - canvas.getBoundingClientRect().left; // Obtient la position X du clic relativement au canvas
+    const mouseY = event.clientY - canvas.getBoundingClientRect().top; // Obtient la position Y du clic relativement au canvas
+    generateRandomPoint(mouseX, mouseY); // Génère un cluster de particules à la position du clic
 }
 
-animatePoints();
+animatePoints(); // Lance l'animation des particules
