@@ -1,15 +1,14 @@
-import "./style.css";
+import "./style.css"; // Importe une feuille de style CSS
 
-const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!;
+const canvas = document.querySelector<HTMLCanvasElement>("#particules-canvas")!; // Sélectionne le canvas HTML avec l'ID "particules-canvas"
+const ctx = canvas.getContext("2d")!; // Obtient le contexte de rendu 2D du canvas
 
-const ctx = canvas.getContext("2d")!;
+const width = (canvas.width = window.innerWidth); // Définit la largeur du canvas sur la largeur de la fenêtre
+const height = (canvas.height = window.innerHeight); // Définit la hauteur du canvas sur la hauteur de la fenêtre
 
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+ctx.fillStyle = "#000000"; // Définit la couleur de remplissage pour les formes en noir
+ctx.fillRect(0, 0, width, height); // Remplit le canvas avec un rectangle noir couvrant toute la surface
 
-ctx.fillStyle = "#000000";
-ctx.fillRect(0, 0, width, height);
-
-ctx.fillStyle = "#ff0000";
-ctx.arc(50, 50, 50, 0, 2 * Math.PI);
-ctx.fill();
+ctx.fillStyle = "#ff0000"; // Définit la couleur de remplissage pour les prochaines formes en rouge
+ctx.arc(50, 50, 50, 0, 2 * Math.PI); // Dessine un cercle rouge avec un rayon de 50 pixels aux coordonnées (50, 50)
+ctx.fill(); // Remplit le cercle avec la couleur définie précédemment (rouge)
